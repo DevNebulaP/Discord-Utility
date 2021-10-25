@@ -16,14 +16,23 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
-        """Kicks a user.\tArguments: member"""
+        """Kicks a user.\tArguments: member reason(optional)"""
         await member.kick(reason=reason)
+        await ctx.send(f"{member.mention} has been kicked")
+
+    @commands.command(aliases=['dcn'])
+    @commands.has_permissions(kick_members=True)
+    async def disconnect(self, ctx, member : discord.Member,):
+        """Disconnects a user.\tArguments: member"""
+        await member.move_to(channel=None)
+        await ctx.send(f"{member.mention} has been disconnected")
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member : discord.Member, *, reason=None):
-        """Bans a user.\tArguments: member"""
+        """Bans a user.\tArguments: member, reason(optional)"""
         await member.ban(reason=reason)
+        await ctx.send(f"{member.mention} has been banned")
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
