@@ -34,6 +34,13 @@ async def unload(ctx, extension):
     client.unload_extension(f"cogs.{extension}")
     await ctx.send(f"Unloaded the {extension} cog")
 
+@client.command()
+async def reload(ctx, extension):
+    """Reloads a cog extension.\tArguments: extension"""
+    client.unload_extension(f"cogs.{extension}")
+    client.load_extension(f"cogs.{extension}")
+    await ctx.send(f"Reloaded the {extension} cog")
+
 
 for file in os.listdir("./cogs"):
     if file.endswith(".py"):
