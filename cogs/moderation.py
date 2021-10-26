@@ -16,7 +16,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
-        """Kicks a user.\tArguments: member reason(optional)"""
+        """Kicks a user.\tArguments: member, reason(optional)"""
         await member.kick(reason=reason)
         await ctx.send(f"{member.mention} has been kicked")
 
