@@ -3,6 +3,8 @@ from discord import Embed, emoji, message
 from discord import Colour
 from discord.ext.commands import context
 import json
+from discord_slash import cog_ext, SlashContext
+from discord_slash.utils.manage_commands import create_option, create_choice
 
 
 class Vote(commands.Cog):
@@ -10,10 +12,23 @@ class Vote(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    @cog_ext.cog_slash(name="vote",
+                       description="Sets up a vote that can be reacted to.",
+                       options=[create_option(
+                           name="title",
+                           description="The title of the vote.",
+                           option_type=3,
+                           required=True),
+                           create_option(
+                           name="options",
+                           description="The choices that members can vote for.",
+                           option_type=3,
+                           required=True)
+                       ])
     @commands.has_permissions(send_messages=True)
-    async def vote(self, ctx, title, *options):
+    async def vote(self, ctx, title, options):
         """Sets up a vote that can be reacted to.\t Arguments: title, options(multiple: at least 2)"""
+        options = options.split()
         if len(options) < 2 or len(options) > 10:
             await ctx.send("There must be at least 2 and no more than 10 options to vote")
             return
@@ -21,7 +36,6 @@ class Vote(commands.Cog):
         emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣",
                   "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
 
-        await ctx.message.delete()
         options = [
             f"**{i+1}. {options[i]}:\t**`0`" for i in range(len(options))]
         contents = "\n".join(options)

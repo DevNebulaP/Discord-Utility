@@ -4,6 +4,8 @@ from discord import client
 from discord import channel
 from discord.ext import commands
 from discord import Embed
+from discord_slash import cog_ext, SlashContext
+from discord_slash.utils.manage_commands import create_option, create_choice
 import json
 
 
@@ -12,11 +14,17 @@ class Event(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    @cog_ext.cog_slash(name="event",
+                       description="Proposes an event that can be reacted to.",
+                       options=[create_option(
+                           name="title",
+                           description="The title of the event.",
+                           option_type=3,
+                           required=True)
+                       ])
     @commands.has_permissions(send_messages=True)
     async def event(self, ctx, *, title):
         """Proposes an event that can be reacted to.\t Arguments: title"""
-        await ctx.message.delete()
         embed = Embed(
             title=title,
             description=f"{ctx.author} has proposed an event.",
