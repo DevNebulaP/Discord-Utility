@@ -20,8 +20,8 @@ class Randomizer(commands.Cog):
             return
 
         embed = Embed(title=title,
-                       description=f"{ctx.author} has randomized a result from {len(options)} options.",
-                       colour=Colour.red())
+                      description=f"{ctx.author} has randomized a result from {len(options)} options.",
+                      colour=Colour.red())
 
         result = random.choice(options)
 
