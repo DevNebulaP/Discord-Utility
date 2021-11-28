@@ -1,8 +1,7 @@
 """Main"""
-import discord
 from discord import client
 from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext
+from discord_slash import SlashCommand
 
 import os
 import time
