@@ -9,4 +9,5 @@ If you want to host this bot your self, these are the requirements you need to i
 -Python3  #https://www.python.org<br />
 -Discord.py #pip install discord.py<br />
 -discord-py-slash-command #pip install discord-py-slash-command<br />
--pynacl
+-pynacl #pip install pynacl<br />
+-FFMPEG #https://ffmpeg.org
