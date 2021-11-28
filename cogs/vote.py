@@ -22,7 +22,7 @@ class Vote(commands.Cog):
                            required=True),
                            create_option(
                            name="options",
-                           description="The choices that members can vote for.",
+                           description="The choices that members can vote for. (multiple) separated by space.",
                            option_type=3,
                            required=True)
                        ])

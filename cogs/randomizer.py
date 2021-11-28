@@ -21,7 +21,7 @@ class Randomizer(commands.Cog):
                            required=True),
                            create_option(
                            name="options",
-                           description="The pool of possible out comes.",
+                           description="The pool of possible out comes. (multiple) separated by space.",
                            option_type=3,
                            required=True)
                        ])
