@@ -112,6 +112,65 @@ class Moderation(commands.Cog):
                 await ctx.send(f"{user.mention} has been unbanned.")
                 return
 
+    @cog_ext.cog_slash(name="give_role",
+                       description="Gives a role to a user. Requires permission to manage roles.",
+                       options=[create_option(
+                           name="member",
+                           description="The member you want to give a role to.",
+                           option_type=6,
+                           required=True),
+                           create_option(
+                           name="role",
+                           description="The role you want to give.",
+                           option_type=8,
+                           required=True)
+                       ])
+    @ commands.has_permissions(manage_roles=True)
+    async def give_roles(self, ctx, member: discord.Member, role: discord.Role):
+        """Gives a role to a member.\tArguments: member, role"""
+        await member.add_roles(role)
+        await ctx.send(f"Gave the role {role.mention} to {member.mention}")
+
+    @cog_ext.cog_slash(name="strip_roles",
+                       description="Strip all roles from a member. Requires permission to manage roles.",
+                       options=[create_option(
+                           name="member",
+                           description="The member you want to give a role to.",
+                           option_type=6,
+                           required=True)
+                       ])
+    @ commands.has_permissions(manage_roles=True)
+    async def strip_roles(self, ctx, member: discord.Member):
+        """Removes all role(s) from a member.\tArguments: member"""
+        roles = member.roles
+        for role in roles:
+            try:
+                await member.remove_roles(role)
+            except:
+                pass
+        await ctx.send(f"Stripped {member.mention} of thier roles.")
+
+    @cog_ext.cog_slash(name="remove_role",
+                       description="Remove a role from a member. Requires permission to manage roles.",
+                       options=[create_option(
+                           name="member",
+                           description="The member you want to remove a role from.",
+                           option_type=6,
+                           required=True),
+                           create_option(
+                           name="role",
+                           description="The role you want to remove.",
+                           option_type=8,
+                           required=True)
+                       ])
+    @ commands.has_permissions(manage_roles=True)
+    async def remove_roles(self, ctx, member: discord.Member, role: discord.Role):
+        """Removes a role from a member.\tArguments: member, roles"""
+        if role not in member.roles:
+            return
+        await member.remove_roles(role)
+        await ctx.send(f"Removed the role {role.mention} from {member.mention}.")
+
 
 def setup(client):
     client.add_cog(Moderation(client))
