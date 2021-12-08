@@ -13,8 +13,8 @@ class Music(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-        self.queue = []
-        self.is_playing = False
+        self.queue = {}
+        self.is_playing = {}
         self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
                                'options': '-vn'}
         self.YDL_OPTIONS = {'format': 'bestaudio'}
@@ -23,7 +23,7 @@ class Music(commands.Cog):
                        description="Stops the audio and disconnects the bot.")
     @commands.has_permissions(send_messages=True)
     async def stop(self, ctx):
-        self.queue.clear()
+        self.queue[ctx.guild.id].clear()
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
         await ctx.send("Audio has been stopped.")
@@ -63,36 +63,40 @@ class Music(commands.Cog):
         url = info['formats'][0]['url']
         source = await discord.FFmpegOpusAudio.from_probe(url, **self.FFMPEG_OPTIONS)
 
-        self.queue.append([info, source])
+        if ctx.guild.id in self.queue:
+            self.queue[ctx.guild.id].append([info, source])
+        else:
+            self.queue[ctx.guild.id] = [[info, source]]
+            self.is_playing[ctx.guild.id] = False
 
         if 'webpage_url' in info:
             await ctx.send(f"Added {info['webpage_url']} to the queue.")
         else:
             await ctx.send(f"Added {video} to the queue.")
 
-        if not self.is_playing:
-            self.is_playing = True
+        if not self.is_playing[ctx.guild.id]:
+            self.is_playing[ctx.guild.id] = True
             await self.play_audio(ctx)
 
     async def play_audio(self, ctx):
-        if len(self.queue):
-            source = self.queue[0][1]
-            del self.queue[0]
+        if len(self.queue[ctx.guild.id]):
+            source = self.queue[ctx.guild.id][0][1]
+            del self.queue[ctx.guild.id][0]
 
             vc = ctx.voice_client
             vc.play(source, after=lambda _: self.play_next(ctx))
         else:
-            self.is_playing = False
+            self.is_playing[ctx.guild.id] = False
 
     def play_next(self, ctx):
         if len(self.queue):
-            source = self.queue[0][1]
-            del self.queue[0]
+            source = self.queue[ctx.guild.id][0][1]
+            del self.queue[ctx.guild.id][0]
 
             vc = ctx.voice_client
             vc.play(source, after=lambda _: self.play_next(ctx))
         else:
-            self.is_playing = False
+            self.is_playing[ctx.guild.id] = False
 
     @cog_ext.cog_slash(name="pause",
                        description="Pauses the audio.")
