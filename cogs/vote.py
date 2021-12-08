@@ -1,11 +1,9 @@
 """Vote Commands"""
 from discord.ext import commands
-from discord import Embed, emoji, message
-from discord import Colour
-from discord.ext.commands import context
+from discord import Embed, Colour
 import json
-from discord_slash import cog_ext, SlashContext
-from discord_slash.utils.manage_commands import create_option, create_choice
+from discord_slash import cog_ext
+from discord_slash.utils.manage_commands import create_option
 
 
 class Vote(commands.Cog):
