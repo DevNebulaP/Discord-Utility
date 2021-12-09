@@ -171,6 +171,42 @@ class Moderation(commands.Cog):
         await member.remove_roles(role)
         await ctx.send(f"Removed the role {role.mention} from {member.mention}.")
 
+    @cog_ext.cog_slash(name="channel_lock",
+                       description="Lock a text channel. Requires permission to manage channels.",
+                       options=[create_option(
+                           name="channel",
+                           description="The channel you want to lock. (Default: The channel you sent this command in)",
+                           option_type=7,
+                           required=False)
+                       ])
+    @ commands.has_permissions(manage_channels=True)
+    async def channel_lock(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
+
+        overwrite = channel.overwrites_for(ctx.guild.default_role)
+        overwrite.send_messages = False
+        await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
+        await ctx.send(f"{channel.name} is locked.")
+
+    @cog_ext.cog_slash(name="channel_unlock",
+                       description="Unlock a text channel. Requires permission to manage channels.",
+                       options=[create_option(
+                           name="channel",
+                           description="The channel you want to unlock. (Default: The channel you sent this command in)",
+                           option_type=7,
+                           required=False)
+                       ])
+    @ commands.has_permissions(manage_channels=True)
+    async def channel_unlock(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
+
+        overwrite = channel.overwrites_for(ctx.guild.default_role)
+        overwrite.send_messages = True
+        await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
+        await ctx.send(f"{channel.name} is unlocked.")
+
 
 def setup(client):
     client.add_cog(Moderation(client))
