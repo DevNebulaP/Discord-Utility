@@ -231,6 +231,30 @@ class Music(commands.Cog):
         except (KeyError, IndexError):
             await ctx.send("Cannot remove that")
 
+    @cog_ext.cog_slash(name="queue_clear",
+                       description="Clear the audio queue.")
+    @commands.has_permissions(send_messages=True)
+    async def queue_clear(self, ctx):
+        if ctx.author.voice is None:
+            await ctx.send("You are not connected to a voice channel.")
+            return
+        voice_channel = ctx.author.voice.channel
+        if ctx.voice_client is None:
+            await ctx.send("Bot is not connected to a voice channel.")
+            return
+        elif voice_channel != ctx.voice_client.channel:
+            await ctx.send("You are not in the same channel as the bot.")
+            return
+
+        try:
+            if len(self.audio_queue[ctx.guild.id]):
+                self.audio_queue[ctx.guild.id] = []
+                await ctx.send("Cleared the queue.")
+            else:
+                await ctx.send(f"Queue is already empty!")
+        except KeyError:
+            await ctx.send("Queue is already empty!")
+
 
 def setup(client):
     client.add_cog(Music(client))
