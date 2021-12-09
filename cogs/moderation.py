@@ -10,8 +10,8 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @cog_ext.cog_slash(name="clear",
-                       description="Clear messages. Requires permission to manage messages.",
+    @cog_ext.cog_slash(name="channel_clear",
+                       description="Clear messages in a text channel. Requires permission to manage messages.",
                        options=[create_option(
                            name="amount",
                            description="The amount of messages to clear (Default: 10).",
@@ -19,7 +19,7 @@ class Moderation(commands.Cog):
                            required=False)
                        ])
     @commands.has_permissions(manage_messages=True)
-    async def clear(self, ctx, amount=10):
+    async def channel_clear(self, ctx, amount=10):
         """Clear messages.\tArguments: amount(default=10)"""
         deleted = await ctx.channel.purge(limit=amount+1)
         await ctx.send(f"Cleared {len(deleted)-1} messages")
@@ -112,7 +112,7 @@ class Moderation(commands.Cog):
                 await ctx.send(f"{user.mention} has been unbanned.")
                 return
 
-    @cog_ext.cog_slash(name="give_role",
+    @cog_ext.cog_slash(name="role_give",
                        description="Gives a role to a user. Requires permission to manage roles.",
                        options=[create_option(
                            name="member",
@@ -126,12 +126,12 @@ class Moderation(commands.Cog):
                            required=True)
                        ])
     @ commands.has_permissions(manage_roles=True)
-    async def give_roles(self, ctx, member: discord.Member, role: discord.Role):
+    async def role_give(self, ctx, member: discord.Member, role: discord.Role):
         """Gives a role to a member.\tArguments: member, role"""
         await member.add_roles(role)
         await ctx.send(f"Gave the role {role.mention} to {member.mention}")
 
-    @cog_ext.cog_slash(name="strip_roles",
+    @cog_ext.cog_slash(name="role_strip",
                        description="Strip all roles from a member. Requires permission to manage roles.",
                        options=[create_option(
                            name="member",
@@ -140,7 +140,7 @@ class Moderation(commands.Cog):
                            required=True)
                        ])
     @ commands.has_permissions(manage_roles=True)
-    async def strip_roles(self, ctx, member: discord.Member):
+    async def role_strip(self, ctx, member: discord.Member):
         """Removes all role(s) from a member.\tArguments: member"""
         roles = member.roles
         for role in roles:
@@ -150,7 +150,7 @@ class Moderation(commands.Cog):
                 pass
         await ctx.send(f"Stripped {member.mention} of thier roles.")
 
-    @cog_ext.cog_slash(name="remove_role",
+    @cog_ext.cog_slash(name="role_remove",
                        description="Remove a role from a member. Requires permission to manage roles.",
                        options=[create_option(
                            name="member",
@@ -164,7 +164,7 @@ class Moderation(commands.Cog):
                            required=True)
                        ])
     @ commands.has_permissions(manage_roles=True)
-    async def remove_roles(self, ctx, member: discord.Member, role: discord.Role):
+    async def role_remove(self, ctx, member: discord.Member, role: discord.Role):
         """Removes a role from a member.\tArguments: member, roles"""
         if role not in member.roles:
             return
