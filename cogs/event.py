@@ -71,7 +71,10 @@ class Event(commands.Cog):
 
     @cog_ext.cog_component()
     async def event_accept(self, ctx: discord_slash.ComponentContext):
-        embed = ctx.origin_message.embeds[0]
+        try:
+            embed = ctx.origin_message.embeds[0]
+        except IndexError:
+            return
         field = embed.fields[0].value.split("\n")
         if ctx.author.mention in field:
             field.remove(ctx.author.mention)
@@ -87,7 +90,10 @@ class Event(commands.Cog):
 
     @cog_ext.cog_component()
     async def event_decline(self, ctx: discord_slash.ComponentContext):
-        embed = ctx.origin_message.embeds[0]
+        try:
+            embed = ctx.origin_message.embeds[0]
+        except IndexError:
+            return
         field = embed.fields[1].value.split("\n")
         if ctx.author.mention in field:
             field.remove(ctx.author.mention)
@@ -103,7 +109,10 @@ class Event(commands.Cog):
 
     @cog_ext.cog_component()
     async def event_maybe(self, ctx: discord_slash.ComponentContext):
-        embed = ctx.origin_message.embeds[0]
+        try:
+            embed = ctx.origin_message.embeds[0]
+        except IndexError:
+            return
         field = embed.fields[2].value.split("\n")
         if ctx.author.mention in field:
             field.remove(ctx.author.mention)
