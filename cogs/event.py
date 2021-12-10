@@ -12,9 +12,6 @@ from discord_slash.utils.manage_components import create_button, create_actionro
 from discord_slash.utils.manage_components import create_select, create_select_option
 
 
-import json
-
-
 class Event(commands.Cog):
 
     def __init__(self, client):
@@ -27,7 +24,7 @@ class Event(commands.Cog):
                            description="The title of the event.",
                            option_type=3,
                            required=True),
-                        create_option(
+                           create_option(
                            name="content",
                            description="The content of the event.",
                            option_type=3,
@@ -42,8 +39,10 @@ class Event(commands.Cog):
             colour=Colour.green()
         )
 
-        embed.set_footer(text='Use the button below to react, press again to remove.')
-        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+        embed.set_footer(
+            text='Use the button below to react, press again to remove.')
+        embed.set_author(name=ctx.author.display_name,
+                         icon_url=ctx.author.avatar_url)
         embed.add_field(name="Accepted", value=None, inline=True)
         embed.add_field(name="Declined", value=None, inline=True)
         embed.add_field(name="Maybe", value=None, inline=True)
