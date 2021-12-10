@@ -1,9 +1,9 @@
 """Vote Commands"""
 from discord.ext import commands
 from discord import Embed, Colour
-import json
 from discord_slash import cog_ext
 from discord_slash.utils.manage_commands import create_option
+from discord_slash.utils.manage_components import create_select, create_select_option, create_actionrow
 
 
 class Vote(commands.Cog):
@@ -22,93 +22,63 @@ class Vote(commands.Cog):
                            name="options",
                            description="The choices that members can vote for. (multiple) separated by space.",
                            option_type=3,
-                           required=True)
+                           required=True),
+                           create_option(
+                           name="content",
+                           description="The content of the vote.",
+                           option_type=3,
+                           required=False),
                        ])
     @commands.has_permissions(send_messages=True)
-    async def vote(self, ctx, title, options):
+    async def vote(self, ctx, title, options, content=""):
         """Sets up a vote that can be reacted to.\t Arguments: title, options(multiple: at least 2)"""
         options = options.split()
-        if len(options) < 2 or len(options) > 10:
-            await ctx.send("There must be at least 2 and no more than 10 options to vote")
-            return
 
-        emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣",
-                  "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
+        select = create_select(
+            options=[create_select_option(options[i], value=str(i))
+                     for i in range(len(options))],
+            placeholder="Cast your vote",
+            min_values=1,
+            max_values=len(options),
+            custom_id="vote_callback"
+        )
+        action_row = create_actionrow(select)
 
-        options = [
-            f"**{i+1}. {options[i]}:\t**`0`" for i in range(len(options))]
-        contents = "\n".join(options)
         embed = Embed(
             title=title,
-            description=f"{ctx.author} started a vote.\n{contents}",
+            description=content,
             colour=Colour.orange()
         )
 
-        embed.set_footer(text='React below to vote')
-        embed.set_author(name=ctx.author, icon_url=ctx.author.avatar_url)
+        embed.set_footer(text='Select below to vote, select again to remove.')
+        embed.set_author(name=ctx.author.display_name,
+                         icon_url=ctx.author.avatar_url)
+        for option in options:
+            embed.add_field(name=f"{option}: `0`", value="None", inline=True)
 
-        msg = await ctx.send(embed=embed)
+        await ctx.send(embed=embed, components=[action_row])
 
-        for i in range(len(options)):
-            await msg.add_reaction(emojis[i])
-
-        with open("json_files/vote.json") as json_read:
-            data = json.load(json_read)
-
-            new_vote = {
-                "message_id": msg.id,
-                "channel_id": msg.channel.id
-            }
-
-            data.append(new_vote)
-
-        with open("json_files/vote.json", "w") as json_write:
-            json.dump(data, json_write, indent=4)
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        """React when a reaction is added"""
-        if payload.member.bot:
-            pass
-
-        else:
-
-            with open("json_files/vote.json") as event_file:
-
-                data = json.load(event_file)
-                for i in data:
-                    if i['message_id'] == payload.message_id:
-                        emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣",
-                                  "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
-                        index = emojis.index(payload.emoji.name) + 1
-                        channel = self.client.get_channel(id=i['channel_id'])
-                        msg = await channel.fetch_message(id=i['message_id'])
-                        new_embed = msg.embeds[0]
-                        contents = new_embed.description.split("\n")
-                        contents[index] = contents[index][:contents[index].find(
-                            "`")+1] + str(int(contents[index][contents[index].find("`")+1:-1])+1) + "`"
-                        new_embed.description = "\n".join(contents)
-                        await msg.edit(embed=new_embed)
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_remove(self, payload):
-        """Reacts when a reaction is removed"""
-        with open("json_files/vote.json") as event_file:
-
-            data = json.load(event_file)
-            for i in data:
-                if i['message_id'] == payload.message_id:
-                    emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣",
-                              "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
-                    index = emojis.index(payload.emoji.name) + 1
-                    channel = self.client.get_channel(id=i['channel_id'])
-                    msg = await channel.fetch_message(id=i['message_id'])
-                    new_embed = msg.embeds[0]
-                    contents = new_embed.description.split("\n")
-                    contents[index] = contents[index][:contents[index].find(
-                        "`")+1] + str(int(contents[index][contents[index].find("`")+1:-1])-1) + "`"
-                    new_embed.description = "\n".join(contents)
-                    await msg.edit(embed=new_embed)
+    @cog_ext.cog_component()
+    async def vote_callback(self, ctx: discord_slash.ComponentContext):
+        try:
+            embed: Embed = ctx.origin_message.embeds[0]
+        except IndexError:
+            return
+        for i in ctx.selected_options:
+            field = embed.fields[int(i)]
+            field_values = field.value.split("\n")
+            if ctx.author.mention in field_values:
+                field_values.remove(ctx.author.mention)
+            else:
+                if field_values == ["None"]:
+                    field_values = []
+                field_values.append(ctx.author.mention)
+            if not len(field_values):
+                field_values = ["None"]
+            count = len(field_values) if field_values != ["None"] else 0
+            embed.set_field_at(
+                index=int(i), name="".join(field.name.split(":")[:-1]) + f": `{count}`", value="\n".join(field_values))
+        await ctx.edit_origin(embed=embed)
 
 
 def setup(client):
