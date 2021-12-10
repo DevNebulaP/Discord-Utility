@@ -59,7 +59,7 @@ class Vote(commands.Cog):
         await ctx.send(embed=embed, components=[action_row])
 
     @cog_ext.cog_component()
-    async def vote_callback(self, ctx: discord_slash.ComponentContext):
+    async def vote_callback(self, ctx):
         try:
             embed: Embed = ctx.origin_message.embeds[0]
         except IndexError:
