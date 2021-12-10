@@ -125,56 +125,6 @@ class Event(commands.Cog):
             index=2, name="Maybe", value="\n".join(field))
         await ctx.edit_origin(embed=embed)
 
-    @cog_ext.cog_slash(name="button",
-                       description="test buttons and action rows.")
-    @commands.has_permissions(send_messages=True)
-    async def button(self, ctx):
-        buttons = [
-            create_button(
-                style=ButtonStyle.green,
-                label="A Green Button",
-                custom_id="button_callback",
-            ),
-        ]
-        action_row = create_actionrow(*buttons)
-        await ctx.send("Test", components=[action_row])
-
-    @cog_ext.cog_component()
-    async def button_callback(self, ctx: discord_slash.ComponentContext):
-        await ctx.edit_origin(content="You've pressed a button.")
-
-    @cog_ext.cog_slash(name="select",
-                       description="test select menu.")
-    @commands.has_permissions(send_messages=True)
-    async def select(self, ctx):
-        select = create_select(
-            options=[  # the options in your dropdown
-                create_select_option("Lab Coat", value="coat", emoji="🥼"),
-                create_select_option("Test Tube", value="tube", emoji="🧪"),
-                create_select_option("Petri Dish", value="dish", emoji="🧫")
-            ],
-            # the placeholder text to show when no options have been chosen
-            placeholder="Choose your option",
-            min_values=1,  # the minimum number of options a user must select
-            max_values=2,  # the maximum number of options a user can select
-            custom_id="select_callback"
-        )
-
-        # like action row with buttons but without * in front of the variable
-        await ctx.send("test", components=[create_actionrow(select)])
-
-    @cog_ext.cog_component()
-    async def select_callback(self, ctx: discord_slash.ComponentContext):
-        await ctx.send(content=f"You've selected {ctx.selected_options}")
-
-    @cog_ext.cog_context_menu(target=ContextMenuType.MESSAGE,
-                              name="context_menu")
-    async def commandname(self, ctx: MenuContext):
-        await ctx.send(
-            content=f"Responded! The content of the message targeted: {ctx.target_message.content}",
-            hidden=False
-        )
-
 
 def setup(client):
     client.add_cog(Event(client))
