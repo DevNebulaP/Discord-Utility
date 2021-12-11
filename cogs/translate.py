@@ -57,9 +57,9 @@ class Translate(commands.Cog):
         embed.set_author(name=ctx.target_message.author.display_name,
                          icon_url=ctx.target_message.author.avatar_url)
         embed.add_field(name=f"Translated from {LANGUAGES[translated.src.lower()].capitalize()}",
-                        value=f"`{translated.origin}`", inline=True)
+                        value=f"***{translated.origin}***", inline=True)
         embed.add_field(name="Translated to English",
-                        value=f"`{translated.text}`", inline=True)
+                        value=f"***{translated.text}***", inline=True)
         await ctx.send(embed=embed, components=[action_row])
 
     @cog_ext.cog_component()
@@ -73,7 +73,7 @@ class Translate(commands.Cog):
         translated: Translated = translator.translate(
             original_field.value, dest=ctx.selected_options[0])
         embed.set_field_at(
-            index=1, name=f"Translated to {self.lang[ctx.selected_options[0]][0]}", value=f"`{translated.text}`")
+            index=1, name=f"Translated to {self.lang[ctx.selected_options[0]][0]}", value=f"***{translated.text}***")
         await ctx.edit_origin(embed=embed)
 
 
