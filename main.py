@@ -7,7 +7,7 @@ import os
 import time
 
 
-client = commands.Bot(command_prefix='.')
+client = commands.Bot(command_prefix="du-dev.")
 slash = SlashCommand(client, sync_commands=True)
 
 
