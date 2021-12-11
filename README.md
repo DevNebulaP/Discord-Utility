@@ -11,4 +11,5 @@ If you want to host this bot your self, these are the requirements you need to i
 -discord-py-slash-command #pip install discord-py-slash-command<br />
 -pynacl #pip install pynacl<br />
 -FFMPEG #https://ffmpeg.org<br />
+-googletrans 3.1.0a0 # pip install googletrans==3.1.0a0<br />
 Then you need to create a token.txt file in the main folder with your bot token in it before running.
