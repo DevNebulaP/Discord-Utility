@@ -71,7 +71,7 @@ class Translate(commands.Cog):
         original_field = embed.fields[0]
         translator = Translator()
         translated: Translated = translator.translate(
-            original_field.value, dest=ctx.selected_options[0])
+            original_field.value[3:-3], dest=ctx.selected_options[0])
         embed.set_field_at(
             index=1, name=f"Translated to {self.lang[ctx.selected_options[0]][0]}", value=f"***{translated.text}***")
         await ctx.edit_origin(embed=embed)
