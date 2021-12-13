@@ -49,12 +49,7 @@ class Moderation(commands.Cog):
                            name="member",
                            description="The member you want to disconnect from voice.",
                            option_type=6,
-                           required=True),
-                           create_option(
-                           name="reason",
-                           description="The reason for disconnecting the member.",
-                           option_type=3,
-                           required=False)
+                           required=True)
                        ])
     @ commands.has_permissions(kick_members=True)
     async def disconnect(self, ctx, member: discord.Member,):
