@@ -21,8 +21,8 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def channel_clear(self, ctx, amount=10):
         """Clear messages.\tArguments: amount(default=10)"""
-        deleted = await ctx.channel.purge(limit=amount+1)
-        await ctx.send(f"Cleared {len(deleted)-1} messages")
+        deleted = await ctx.channel.purge(limit=amount)
+        await ctx.send(f"Cleared {len(deleted)} messages")
 
     @cog_ext.cog_slash(name="kick",
                        description="Kick a member. Requires permission to kick a member.",
